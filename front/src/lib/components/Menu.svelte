@@ -4,7 +4,7 @@
 
 <nav>
     <div class="menu_element"><a href='.'>Strona główna</a></div>
-    <div class="menu_element"><a href='/admin'>Filmy</a></div>
+    <div class="menu_element"><a href='/movies'>Filmy</a></div>
     <div class="menu_element"><a href='/contact'>Kontakt</a></div>
 </nav>
 
