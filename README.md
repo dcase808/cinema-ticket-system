@@ -5,6 +5,7 @@ Enter your MongoDB connection string and your randomly generated SECRET_KEY in `
 ```
 openssl rand -hex 32
 ```
+You also needd to set your API URL in ```front/src/lib/constants/constants.svelte```
 ## Running application
 ### Run front-end application
 Enter ```front``` folder and install all dependencies.
