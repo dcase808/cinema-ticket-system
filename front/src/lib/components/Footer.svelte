@@ -3,7 +3,7 @@
 </script>
 
 <footer>
-    2022 Marcin Koczułap @&nbsp<a href='http://koczulap.pl'>koczulap.pl</a>&nbsp<a href='/admin'>admin panel</a>
+    2022 Marcin Koczułap @&nbsp<a href='http://koczulap.pl'>koczulap.pl</a>&nbsp<a href='/login'>admin panel</a>
 </footer>
 
 <style>

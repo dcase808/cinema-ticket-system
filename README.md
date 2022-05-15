@@ -1,7 +1,7 @@
 # Cinema ticket system
 Cinema ticket system built with Svelte, Python with FastAPI and MongoDB.
 ## Configuration
-Enter your MongoDB connection string in ```back/src/db_connect.py``` and enter your randomly generated SECRET_KEY in ```back/src/auth.py```. You can generate it using OpenSSL.
+Enter your MongoDB connection string and your randomly generated SECRET_KEY in ```back/src/secret.py```. You can generate your secret key using OpenSSL.
 ```
 openssl rand -hex 32
 ```

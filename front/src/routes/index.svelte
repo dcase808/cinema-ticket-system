@@ -4,7 +4,6 @@
 
 	const getMovies = () => {
 		let url = API_URL + '/movies'
-		console.log(url)
 		return fetch(url)
 		.then(response => response.json())
 		.then(data => data)

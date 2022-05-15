@@ -1,7 +1,6 @@
 import pymongo
+from secret import CONNECTION_STRING
 
-
-CONNECTION_STRING = 'XXX'
 
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.cinema

@@ -1,48 +1,57 @@
 <script>
-    import {API_URL} from '$lib/constants/constants.svelte'
-    const getMovies = () => {
-        let url = API_URL + '/movies'
-		return fetch(url)
-		.then(response => response.json())
-		.then(data => data)
-	}
+    import { goto } from '$app/navigation'; 
+    import AddMovie from '$lib/components/AddMovie.svelte';
+    import AddShow from '$lib/components/AddShow.svelte';
 
-	let movies = getMovies()
+    import {API_URL} from '$lib/constants/constants.svelte'
+
+    import Cookies from 'js-cookie'
+
+    import { onMount } from 'svelte';
+
+    let loggedIn = false
+
+    const validateAndForward = async () => {
+        let url = API_URL + '/validate'
+        let response = await fetch(url, {
+            headers: {'Authorization': 'Bearer ' + Cookies.get('jwt-token')}
+        })
+
+        if(!response.ok){
+            Cookies.remove('jwt-token')
+            goto('/login')
+        }
+        loggedIn = true
+    }
+
+    const checkIfLoggedIn = async () => {
+        if(Cookies.get('jwt-token'))
+        {
+            validateAndForward()
+        }
+        else
+        {
+            goto('/login')
+        }
+    }
+
+    onMount(() => {
+        checkIfLoggedIn()
+    })
+
+    const logout = () => {
+        Cookies.remove('jwt-token')
+        goto('/')
+    }
+
 </script>
 
 <main>
-    <div id="left">
-        <form>
-            <label>
-                Tytuł<br>
-                <input type='text'>
-            </label>
-            <label>
-                Data<br>
-                <input type='date'>
-            </label>
-            <label>
-                Opis<br>
-                <textarea style='resize: none'></textarea>
-            </label>
-            <label>
-                Plakat<br>
-                <input type='text'>
-            </label>
-            <input type='submit' value='Dodaj'>
-        </form>
-    </div>
-    <div id="right">
-        Usuń film<br>
-        {#await movies}
-        <span>Loading</span>
-        {:then movies}
-        {#each movies as movie}
-            <button>{movie.title}</button><br>
-        {/each}
-        {/await}
-
-    </div>
+    {#if loggedIn}
+    <AddMovie/>
+    <AddShow/>
+    <button on:click={logout}>Wyloguj</button>
+    {/if}
 </main>
 <style>
     input, textarea {
@@ -67,6 +76,7 @@
         color: white;
         border-radius: 2px;
         display: flex;
+        flex-direction: column;
         padding-top: 10px;
     }
 </style>

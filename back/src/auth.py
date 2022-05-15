@@ -6,10 +6,10 @@ from fastapi import Depends, HTTPException, status
 from db_connect import users
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
+from secret import SECRET_KEY
 
 ouath2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
-SECRET_KEY = 'XXX'
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -39,7 +39,7 @@ def authenticate_user(username, password):
         user = users.find_one({'username': username})
         if verify_password(password, user['key'], user['salt']):
             return True
-    return True
+    return False
 
 def create_token(data: dict):
     to_encode = data.copy()

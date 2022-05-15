@@ -13,9 +13,15 @@ origins = ['*']
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_headers=['*'],
+    allow_methods=['*']
 )
 
-@app.post('/token', response_model=Token)
+@app.get('/validate', tags=['auth'])
+async def validate(username: str = Depends(validate_token)):
+    return username
+
+@app.post('/token', response_model=Token, tags=['auth'])
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -24,8 +30,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': token, 'token_type': 'bearer'}
     
 
-@app.post('/movies')
-async def add_movie(movie: Movie, token: str = Depends(validate_token)):
+@app.post('/movies', tags=['movies'])
+async def add_movie(movie: Movie, username: str = Depends(validate_token)):
     if movies.count_documents({'_id': movie.title}) > 0:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT)
     entry = {
@@ -37,13 +43,12 @@ async def add_movie(movie: Movie, token: str = Depends(validate_token)):
     movies.insert_one(entry)
     return entry
 
-@app.get('/movies/{title}', response_model=Movie)
+@app.get('/movies/{title}', response_model=Movie, tags=['movies'])
 async def get_movie(title: str):
     find_movies = movies.find({'_id': title})
-    print(find_movies[0])
     return find_movies[0]
 
-@app.get('/movies', response_model=list[Movie])
+@app.get('/movies', response_model=list[Movie], tags=['movies'])
 async def get_all_movies():
     output = []
     find_movies = movies.find()
@@ -51,19 +56,7 @@ async def get_all_movies():
         output.append(movie)
     return output
 
-@app.post('/shows')
-async def add_show(show: Show, username: str = Depends(validate_token)):
-    if username is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    entry = {
-        'title': show.title,
-        'date': show.date,
-        'seats_taken': show.seats_taken,
-    }
-    show = shows.insert_one(entry)
-    return show
-
-@app.get('/shows', response_model=list[ShowOut])
+@app.get('/shows', response_model=list[ShowOut], tags=['shows'])
 async def get_shows(title: str):
     movies = []
     find_shows = shows.find({'title': title})
@@ -82,6 +75,29 @@ async def get_seats(id: str):
         out = {
             'seats_taken': find_shows[0]['seats_taken']
         }
-        print(out)
         return out
-    return None
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+@app.post('/shows', response_model=Show, tags=['shows'])
+async def add_show(show: Show, username: str = Depends(validate_token)):
+    entry = {
+        'title': show.title,
+        'date': show.date,
+        'seats_taken': show.seats_taken,
+    }
+    shows.insert_one(entry)
+    return entry
+
+@app.delete('/shows/{id}', tags=['shows'], deprecated=True)
+async def remove_show(id: str, username: str = Depends(validate_token)):
+    id = ObjectId(id)
+    show = shows.find_one_and_delete({'_id': id})
+    if show:
+        out = {
+            'id': str(show['_id']),
+            'title': show['title'],
+            'date': show['date'],
+            'seats_taken': shows['seats_taken']
+        }
+        return out
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
