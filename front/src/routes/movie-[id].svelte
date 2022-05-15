@@ -2,11 +2,10 @@
 	import Brief from '$lib/components/Brief.svelte'
 	import Seats from '$lib/components/Seats.svelte'
 	import { page } from '$app/stores';
-
-
+	import {API_URL} from '$lib/constants/constants.svelte'
 
 	const fetchData = () => {
-		let url = "http://localhost:8000/movies/" + $page.params.id
+		let url = API_URL + '/movies/' + $page.params.id
 		console.log(url)
 		return fetch(url)
 		.then(response => response.json())

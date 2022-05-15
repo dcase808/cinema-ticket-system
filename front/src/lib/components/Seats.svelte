@@ -1,10 +1,12 @@
 <script>
     export let id
 
+    import {API_URL} from '$lib/constants/constants.svelte'
+
     let selectedSeats = new Set()
 
     const getShows = () => {
-        let url = "http://localhost:8000/shows?title=" + id
+        let url = API_URL + '/shows?title=' + id
         return fetch(url)
         .then(response => response.json())
         .then(response => response)
@@ -12,7 +14,7 @@
     }
 
     const getSeats = (id) => {
-        let url = "http://localhost:8000/seats/" + id
+        let url = API_URL + '/seats/' + id
         return fetch(url)
         .then(response => response.json())
         .then(response => response)
@@ -24,7 +26,6 @@
         date = new Date(date)
         taken = getSeats(id)
         year = date.getFullYear()
-        console.log(year)
         month = date.getMonth() + 1
         day = date.getDate()
         hour = date.getHours()

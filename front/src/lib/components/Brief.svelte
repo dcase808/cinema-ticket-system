@@ -1,6 +1,5 @@
 <script>
     export let id, title, description, poster
-    let date = '01.01.2023'
 </script>
 
 <div class='container'>
@@ -8,7 +7,7 @@
         <img src={poster} alt={title} class='posterimg'>
     </div>
     <div class='description'>
-        <h3>{title} {date}</h3>
+        <h3>{title}</h3>
         <p>{description}</p>
     </div>
 </div>

@@ -1,6 +1,8 @@
 <script>
+    import {API_URL} from '$lib/constants/constants.svelte'
     const getMovies = () => {
-		return fetch("http://localhost:3001/movies")
+        let url = API_URL + '/movies'
+		return fetch(url)
 		.then(response => response.json())
 		.then(data => data)
 	}
