@@ -1,0 +1,87 @@
+from fastapi import Depends, FastAPI, Query, status, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from db_connect import movies, shows, users
+from models import Movie, SeatsOut, Show, ShowOut, Token
+from bson import ObjectId
+from fastapi.security import OAuth2PasswordRequestForm
+from auth import authenticate_user, create_token, validate_token
+
+app = FastAPI()
+
+origins = ['*']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+)
+
+@app.post('/token', response_model=Token)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    token = create_token({'sub': form_data.username})
+    return {'access_token': token, 'token_type': 'bearer'}
+    
+
+@app.post('/movies')
+async def add_movie(movie: Movie, token: str = Depends(validate_token)):
+    if movies.count_documents({'_id': movie.title}) > 0:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+    entry = {
+        '_id': movie.title,
+        'title': movie.title,
+        'poster': movie.poster,
+        'desc': movie.desc
+    }
+    movies.insert_one(entry)
+    return entry
+
+@app.get('/movies/{title}', response_model=Movie)
+async def get_movie(title: str):
+    find_movies = movies.find({'_id': title})
+    print(find_movies[0])
+    return find_movies[0]
+
+@app.get('/movies', response_model=list[Movie])
+async def get_all_movies():
+    output = []
+    find_movies = movies.find()
+    for movie in find_movies:
+        output.append(movie)
+    return output
+
+@app.post('/shows')
+async def add_show(show: Show, username: str = Depends(validate_token)):
+    if username is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    entry = {
+        'title': show.title,
+        'date': show.date,
+        'seats_taken': show.seats_taken,
+    }
+    show = shows.insert_one(entry)
+    return show
+
+@app.get('/shows', response_model=list[ShowOut])
+async def get_shows(title: str):
+    movies = []
+    find_shows = shows.find({'title': title})
+    for show in find_shows:
+        show['id'] = str(show['_id'])
+        movies.append(show)
+    return movies
+
+@app.get('/seats/{id}', response_model=SeatsOut)
+async def get_seats(id: str):
+    id = ObjectId(id)
+    find_shows = shows.find({'_id': id})
+    count = shows.count_documents({'_id': id})
+    print(count)
+    if count > 0:
+        out = {
+            'seats_taken': find_shows[0]['seats_taken']
+        }
+        print(out)
+        return out
+    return None
