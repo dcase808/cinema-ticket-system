@@ -2,9 +2,9 @@
 	import Movie from '$lib/components/Movie.svelte'
 	import {API_URL} from '$lib/constants/constants.svelte'
 
-	const getMovies = () => {
+	const getMovies = async() => {
 		let url = API_URL + '/movies'
-		return fetch(url)
+		return await fetch(url)
 		.then(response => response.json())
 		.then(data => data)
 	}

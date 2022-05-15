@@ -54,17 +54,6 @@
     {/if}
 </main>
 <style>
-    input, textarea {
-        background-color: black;
-        color: white;
-        width: 90%;
-    }
-    #left {
-        width: 100%;
-    }
-    #right {
-        width: 100%;
-    }
 	main{
         text-align: center;
 		margin: 0 auto;

@@ -5,17 +5,17 @@
 
     let selectedSeats = new Set()
 
-    const getShows = () => {
+    const getShows = async () => {
         let url = API_URL + '/shows?title=' + id
-        return fetch(url)
+        return await fetch(url)
         .then(response => response.json())
         .then(response => response)
         .catch(e => console.error(e))
     }
 
-    const getSeats = (id) => {
+    const getSeats = async (id) => {
         let url = API_URL + '/seats/' + id
-        return fetch(url)
+        return await fetch(url)
         .then(response => response.json())
         .then(response => response)
         .catch(e => console.error(e))

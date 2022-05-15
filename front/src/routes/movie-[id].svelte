@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import {API_URL} from '$lib/constants/constants.svelte'
 
-	const fetchData = () => {
+	const fetchData = async () => {
 		let url = API_URL + '/movies/' + $page.params.id
 		console.log(url)
 		return fetch(url)

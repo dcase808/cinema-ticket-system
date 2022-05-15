@@ -17,7 +17,6 @@
         }
     }
 
-    
 
     const submit = async () => {
         if(Cookies.get('jwt-token')){

@@ -2,7 +2,7 @@
 	import Brief from '$lib/components/Brief.svelte';
 	import {API_URL} from '$lib/constants/constants.svelte'
 
-	const getMovies = () => {
+	const getMovies = async () => {
 		let url = API_URL + '/movies'
 		return fetch(url)
 		.then(response => response.json())
