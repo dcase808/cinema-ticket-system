@@ -1,5 +1,5 @@
 # Cinema ticket system
-Cinema ticket system built with Svelte, Python with FastAPI and MongoDB.
+Cinema ticket system built with Svelte, Python with FastAPI and MongoDB. Demo at https://cinema-ticket-system.vercel.app/
 ## Configuration
 Enter your MongoDB connection string and your randomly generated SECRET_KEY in ```back/src/secret.py```. You can generate your secret key using OpenSSL.
 ```

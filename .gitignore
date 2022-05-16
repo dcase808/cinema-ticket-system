@@ -1,4 +1,6 @@
 back/cinemative
 back/src/__pycache__
+back/src/secret.py
 front/.svelte-kit
 front/node_modules
+deta
