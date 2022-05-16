@@ -1,3 +1,3 @@
 <script context='module'>
-    export const API_URL = 'http://localhost:8000'
+    export const API_URL = 'https://cinemative.herokuapp.com:443'
 </script>
