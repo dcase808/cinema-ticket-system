@@ -101,3 +101,12 @@ async def remove_show(id: str, username: str = Depends(validate_token)):
         }
         return out
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+@app.patch('/shows/{id}', tags=['shows'])
+async def add_taken_seats(id: str, seats: list[int]):
+    id = ObjectId(id)
+    count = shows.count_documents({'_id': id})
+    if count > 0:
+        shows.update_one({'_id': id}, {'$push': {'seats_taken': {'$each': seats}}})
+        return True
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
