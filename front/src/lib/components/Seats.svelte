@@ -3,6 +3,8 @@
 
     import {API_URL} from '$lib/constants/constants.svelte'
 
+    import Cookie from "js-cookie";
+
     let selectedSeats = new Set()
 
     const getShows = async () => {
@@ -44,6 +46,27 @@
             selectedSeats.add(seat)
             let temp = new Set(selectedSeats)
             selectedSeats = temp
+        }
+    }
+
+    const makeOrder = async () => {
+        let url = API_URL + '/shows/' + selectedShow
+        let entry = {
+            seats: Array.from(selectedSeats)
+        }
+        console.log(entry)
+        console.log(JSON.stringify(entry))
+        let response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(entry)
+            })
+        if(response.ok)
+        {
+            taken = getSeats(selectedShow)
+            alert('Złożono zamówienie')
         }
     }
 
@@ -120,7 +143,7 @@
 
     </div>
     <div>Suma: {(selectedSeats.size * 19.99).toFixed(2)} PLN</div>
-    <div><button style='width: 88%; margin-left: 50px; margin-right: 50px;'>Zapłać</button></div>
+    <div><button style='width: 88%; margin-left: 50px; margin-right: 50px;' on:click={() => {makeOrder()}}>Zapłać</button></div>
 </div>
 
 {/if}

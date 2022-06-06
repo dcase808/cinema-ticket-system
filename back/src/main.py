@@ -1,7 +1,7 @@
-from fastapi import Depends, FastAPI, Query, status, HTTPException
+from fastapi import Depends, FastAPI, Query, status, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from db_connect import movies, shows, users
-from models import Movie, SeatsOut, Show, ShowOut, Token
+from models import Movie, SeatIn, SeatsOut, Show, ShowOut, Token
 from bson import ObjectId
 from fastapi.security import OAuth2PasswordRequestForm
 from auth import authenticate_user, create_token, validate_token
@@ -65,6 +65,15 @@ async def get_shows(title: str):
         movies.append(show)
     return movies
 
+@app.get('/shows-all', response_model=list[ShowOut], tags=['shows'])
+async def get_all_shows():
+    movies = []
+    find_shows = shows.find({})
+    for show in find_shows:
+        show['id'] = str(show['_id'])
+        movies.append(show)
+    return movies
+
 @app.get('/seats/{id}', response_model=SeatsOut)
 async def get_seats(id: str):
     id = ObjectId(id)
@@ -88,7 +97,7 @@ async def add_show(show: Show, username: str = Depends(validate_token)):
     shows.insert_one(entry)
     return entry
 
-@app.delete('/shows/{id}', tags=['shows'], deprecated=True)
+@app.delete('/shows/{id}', response_model=ShowOut, tags=['shows'])
 async def remove_show(id: str, username: str = Depends(validate_token)):
     id = ObjectId(id)
     show = shows.find_one_and_delete({'_id': id})
@@ -97,16 +106,29 @@ async def remove_show(id: str, username: str = Depends(validate_token)):
             'id': str(show['_id']),
             'title': show['title'],
             'date': show['date'],
-            'seats_taken': shows['seats_taken']
+            'seats_taken': show['seats_taken']
+        }
+        return out
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+@app.delete('/movies/{id}', tags=['movies'])
+async def remove_movie(id: str, username: str = Depends(validate_token)):
+    movie = movies.find_one_and_delete({'_id': id})
+    if movie:
+        out = {
+            'id': str(movie['_id']),
+            'title': movie['title'],
+            'poster': movie['poster'],
+            'desc': movie['desc']
         }
         return out
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.patch('/shows/{id}', tags=['shows'])
-async def add_taken_seats(id: str, seats: list[int]):
+async def add_taken_seats(id: str, seats: SeatIn):
     id = ObjectId(id)
     count = shows.count_documents({'_id': id})
     if count > 0:
-        shows.update_one({'_id': id}, {'$push': {'seats_taken': {'$each': seats}}})
+        shows.update_one({'_id': id}, {'$push': {'seats_taken': {'$each': seats.seats}}})
         return True
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

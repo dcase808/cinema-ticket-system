@@ -2,6 +2,8 @@
     import { goto } from '$app/navigation'; 
     import AddMovie from '$lib/components/AddMovie.svelte';
     import AddShow from '$lib/components/AddShow.svelte';
+    import DeleteMovie from '$lib/components/DeleteMovie.svelte';
+    import DeleteShow from '$lib/components/DeleteShow.svelte';
 
     import {API_URL} from '$lib/constants/constants.svelte'
 
@@ -50,6 +52,8 @@
     {#if loggedIn}
     <AddMovie/>
     <AddShow/>
+    <DeleteMovie/>
+    <DeleteShow/>
     <button on:click={logout}>Wyloguj</button>
     {/if}
 </main>
